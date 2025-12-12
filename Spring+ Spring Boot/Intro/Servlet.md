@@ -29,12 +29,14 @@
 
 
 
+## Notes
+- Tomcat, Jetty, Netty,...etc all considered as Servlet Containers that manages the lifecycle of the servlet including multi-threading
 
-
+- The lifecycle of a servlet uses pooling methods like HikariCP to reduce the overhead of creating and deleting threads
 
 
 
 ## Sources
 > *What is servlet?, a brief about servlets* https://medium.com/@bayazidfr/what-is-a-servlet-2abaa4203d7b 
 
-> *History of servlets, Servlets in Spring boot*
+> *History of servlets, Servlets in Spring boot* https://medium.com/@myggona/spring-boot-dispatcher-servlet-705353e3496a
