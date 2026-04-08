@@ -81,3 +81,39 @@ myset.add("tamer")
 
 
 # Map
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+- comparator vs comparable
+- comparable: is the interface defines the default ordering of the objects of a class, has a method `compareTo` that compares the current object with another object of the same class and returns a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object.
+
+- comparable -> default -> you only use `Collections.sort(list)` to sort the list of objects of this class.
+
+- comparator: is the interface defines a custom ordering of the objects of a class, has a method `compare` that compares two objects of the same class and returns a negative integer, zero, or a positive integer as the first argument is less than, equal to, or greater than the second.
+
+- comparator -> custom -> you use `Collections.sort(list, comparator)` to sort the list of objects of this class using the custom comparator.
+
+- map allows only one null key and multiple null values while hashset allows only one null value.
+
+- tree set does not allow null values because it uses the compareTo method to compare the elements and if the element is null it will throw a NullPointerException.
+
+- Hashtable is thread safe while hashmap is not thread safe.

@@ -178,4 +178,37 @@ DeadLock can be solved by:
 - Lock timeout: where a thread will wait for a lock for a certain amount of time and if it cannot acquire it, it will give up and release any locks.
 - Avoiding Nested Locks.
 
-    
+
+
+
+- Caching Strategies:
+- Cache Aside: the application code is responsible for reading and writing to the cache, it first **checks the cache** for the data, if it is **not found**, it **retrieves it from the database** and stores it in the cache for future use.
+ * Very simple strategy.
+ * Backend controls logic of caching.
+ * Data Can be stale if not updated in cache.
+ * Suitable for read-heavy workloads where data is not frequently updated.
+
+- Read Through: the cache is responsible for loading data from the database when it is not found in the cache(cache miss), the application code interacts with the cache as if it were the database.
+ * Cache controls logic of caching.
+ * Data is always fresh.
+ * Suitable for read-heavy workloads where data is frequently updated.
+ * Application isn't responsible for cache management.
+
+- Refresh Ahead: the cache refresh data from the database by a background process ahead of the time(during or after period).
+    * Avoid cache misses by refreshing data before it's needed.
+    * Suitable for frequent data updates
+    * Stable Cache.
+
+- Write through: the cache is responsible for writing data to the database along side with the cache.
+    * Cache is up to date
+    * No stale data in cache.
+    * Read after write.
+
+- Write behind: the cache is responsible for writing data to the database asynchronously.
+    * Very high performance for write operations.
+    * Can cause data loss if the cache fails(you can solve this using kafka or backup).
+
+- Write around: the application code writes data directly to the database, bypassing the cache, and reads data from the cache.
+    * Avoids cache pollution by not caching write operations.
+    * Suitable for write-heavy workloads where data is not frequently read.
+    * Can lead to stale data in cache if not updated.

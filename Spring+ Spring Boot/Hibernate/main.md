@@ -40,6 +40,10 @@ Hibernate makes relational data visible to a program written in Java, in a natur
 
 - Hibernate by default is **Optimistic Locking** you can request it to be **Pesimistic Locking** or to be by timestamp.
 
+> Optimistic Locking: a concurrency control method that allows multiple transactions to access the same data, it's done in hibernate by `@Version` annotation, it checks version of the entity before updating it if the version is not the same it will throw an exception.
+
+> Pesimistic Locking: a concurrency control method that locks the data when it is accessed by a transaction, it can be done in hibernate by `@Lock` annotation, it locks the entity when it is accessed by a transaction and other transactions will have to wait until the lock is released. 
+
 - Most SQL is generated at system **initialization time** instead of at **runtime**.
 
 
