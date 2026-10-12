@@ -68,3 +68,61 @@ cat /var/log/kube-proxy.log
 - for pods, the kube server replace it's ip octets with dashes and add the pod name and namespace name to the front of it, so you can call it with it's FQDN in the format of `<pod-ip-dashes>.<namespace>.pod.cluster.local`
 
 
+## Core DNS
+
+- for each pods to have services names each pod must have `/etc/resolve.conf` file passed to it
+
+- a main dns server kubernetes deploy in order to handle dns and routing
+
+- before 1.12 the dns solution kubernetes implements(kubenetes deploys) is kube-dns
+
+- now kubenetes utilizes core-dns solution for dns server
+
+- core-dns have many plugins that responsable for resolution of ip, caching, routing,...etc
+
+- core-dns pod runs executable `./coredns` the same when we installed it, core-dns needs config file it's location inside `/etc/coredns/Corefile`
+
+below is an example of the config file with explaination of each line:
+```bash
+# CoreDNS config file
+.:53 {
+  error
+  health
+  ready
+
+
+  # this plugin is responsible for resolving DNS queries for services and pods in the cluster. It uses the Kubernetes API to look up the IP addresses of services and pods based on their names.
+  kubernetes cluster.local in-addr.arpa ip6.arpa {
+    pods insecure # this configuration option allows coredns to resolve pod by adding dashes
+
+    fallthrough in-addr.arpa ip6.arpa
+  }
+
+  prometheus :9153
+
+  # proxy plugin is responsible for forwarding DNS queries to upstream DNS servers, dns server cannot resolve the record it is forwarded to the upstream servers specified here
+  proxy . /etc/resolv.conf
+
+  cache 30
+}
+```
+
+- the coreFile is passed to the core-dns pod via configmap, you can view it by running the below command:
+```bash
+kubectl get configmap coredns -n kube-system -o yaml
+```
+
+- core-dns have a service named `kube-dns` which is a clusterIP, if any new pod was created it will get the ip of this service and it's added to pod's `/etc/resolv.conf` file as the first nameserver, so any dns query will be sent to this service and it will resolve it for the pod.
+
+
+- kubelet is responsible for setting the `kube-dns` ip to each new pod is the `kubelet` component, as it adds the cluster dns inside the `namespace` field in the `/etc/resolv.conf` file.
+
+- the `/resolve.conf` file inside each pod have `search` entry for below.
+```bash
+search <namespace>.svc.cluster.local svc.cluster.local cluster.local
+```
+
+
+
+
+
