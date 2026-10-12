@@ -1,0 +1,7 @@
+The network is configured with canal. Check the canal pods logs using the command kubectl logs <canal-pod-name> -n kube-system and look for default IPv4 pool range.
+
+Or
+
+Check the kube-controller-manager.yaml manifest file and look for the --cluster-cidr parameter, which defines the IP range assigned to Pods in the cluster.
+
+cat /etc/kubernetes/manifests/kube-controller-manager.yaml   | grep cluster-cidr

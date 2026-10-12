@@ -1,0 +1,8 @@
+apiVersion: internals.datasets.kodekloud.com/v1
+kind: Internal
+metadata:
+  name: internal-dataset
+spec:
+  internalLoad: "internal"
+  range: 2
+  percentage: "50"

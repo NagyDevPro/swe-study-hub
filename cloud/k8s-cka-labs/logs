@@ -1,0 +1,8 @@
+Type     Reason                        Age                    From                       Message
+  ----     ------                        ----                   ----                       -------
+  Warning  FailedComputeMetricsReplicas  6m30s (x10 over 9m)    horizontal-pod-autoscaler  invalid metrics (1 invalid out of 1), first error is: failed to get cpu resource metric value: failed to get cpu utilization: missing request for cpu in container nginx of Pod nginx-deployment-77bc6bd484-fvclp
+  Warning  FailedComputeMetricsReplicas  6m15s (x2 over 8m45s)  horizontal-pod-autoscaler  invalid metrics (1 invalid out of 1), first error is: failed to get cpu resource metric value: failed to get cpu utilization: missing request for cpu in container nginx of Pod nginx-deployment-77bc6bd484-ng7wh
+  Warning  FailedGetResourceMetric       6m (x3 over 8m45s)     horizontal-pod-autoscaler  failed to get cpu utilization: missing request for cpu in container nginx of Pod nginx-deployment-77bc6bd484-ng7wh
+  Warning  FailedGetResourceMetric       4m (x16 over 9m)       horizontal-pod-autoscaler  failed to get cpu utilization: missing request for cpu in container nginx of Pod nginx-deployment-77bc6bd484-fvclp
+  Normal   SuccessfulRescale             3m45s (x2 over 9m15s)  horizontal-pod-autoscaler  New size: 3; reason: Current number of replicas above Spec.MaxReplicas
+  Normal   SuccessfulRescale             3m15s                  horizontal-pod-autoscaler  New size: 1; reason: All metrics below targetx`
