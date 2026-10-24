@@ -117,9 +117,19 @@ cat /etc/*release*
 - to get all resources in the cluster, use below command:
 ```bash
 kubectl get all --all-namespaces -o yaml > resources.yaml
+# or
+kubectl get deployment(or you can use `all`) -A -o yaml > resources.yaml
 ```
 
 - to check the cni configuration on the node, use below command:
 ```bash
 cd /etc/cni/net.d
 ```
+
+
+
+Now, in k8s version 1.20+ we can create an Ingress resource from the imperative way like this:-
+
+Format - kubectl create ingress <ingress-name> --rule="host/path=service:port"
+
+Example - kubectl create ingress ingress-test --rule="wear.my-online-store.com/wear*=wear-service:80"

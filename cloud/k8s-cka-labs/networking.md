@@ -122,7 +122,128 @@ kubectl get configmap coredns -n kube-system -o yaml
 search <namespace>.svc.cluster.local svc.cluster.local cluster.local
 ```
 
+## Ingress
+
+- Ingress is a Kubernetes resource that allows user to access to multiple application with a single entry point(one external load balancer) without the need to make multiple configuraitons, it provides capapilites like load balancing, ssl implementation,...etc
+
+- Ingress is a l7 load balancer that routes traffic to different services based on the request's host or path.
+
+- Ingress Components:
+  - **Ingress Controller**: A Kubernetes ingress controller is a specialized software component that acts as a smart entry point and reverse proxy to manage and route external HTTP and HTTPS traffic into a kubernetes cluster.
+
+  > Ingerss Controller monitors k8s ingress resource and transform it into k8s configuration that is needed by services,...etc.
+
+
+  - **Ingress Resource**: a set of resource rules that define how external traffic should be routed to services within a kubernetes cluster.
+
+
+Ingress resource example:
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-test
+  annotations: # annotations are specified per each ingress controller
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  tls:
+    - hosts: <host must match the spec.rules.host , and must be only one host>
+   secretName: <name of the tls private key to be used by k8s>
+  spec:
+    rules:
+    # when we have multiple hosts we must add each under it's rule
+
+    - host: wear.my-online-store.com
+      http:
+        paths:
+        # for multiple paths we must add each under it's path
+        # default service is the service where it's specified by k8s to route any other path that is not specified by domains/paths
+        - path: /wear*
+          backend:
+            service:
+              name: wear-service
+              port:
+                number: 80
+```
 
 
 
+## Gateway Api
 
+- issues with ingress
+  - a single resource for routing multi services(no multi tenant support)
+  - doesn't support api gateway basic features like authN,authZ, rate-limitng,..etc
+  - doesn't support multi protocols like grpc, tcp, udp,...etc
+  - specific annotations for each ingress controller, without validation at the resource creation level.
+
+- **Gateway Api** is an official k8s project focused on l4 and l7 routing, it's a new api that is introduced in k8s 1.19+ to solve the issues of ingress, it provides a more flexible and extensible way to manage traffic routing and load balancing in a kubernetes cluster.
+
+
+- Unlike the ingress, gw creates 3 personas
+  - **GatewayClass**: a resource that defines the type of gateway and the controller that will manage it.
+  ```yaml
+  apiVersion: gateway.networking.k8s.io/v1alpha2
+  kind: GatewayClass
+  metadata:
+    name: my-gateway-class
+  spec:
+    controller: example.com/gateway-controller
+  ```
+  - **Gateway**: a resource that defines the actual gateway instance and the configuration for routing traffic to services.
+  ```yaml
+  apiVersion: gateway.networking.k8s.io/v1alpha2
+  kind: Gateway
+  metadata:
+    name: my-gateway
+  spec:
+    gatewayClassName: my-gateway-class
+    listeners:
+      - protocol: HTTP
+        port: 80
+        routes:
+          kind: HTTPRoute
+          selector:
+            matchLabels:
+              app: my-app
+  ```
+  - **HTTPRoute**: a resource that defines the routing rules for HTTP traffic, including the host and path matching criteria, and the backend services to route traffic to.
+  ```yaml
+  apiVersion: gateway.networking.k8s.io/v1alpha2
+  kind: HTTPRoute
+  metadata:
+    name: my-http-route
+    labels:
+      app: my-app
+  spec:
+    parentRefs: # name of the gateway that will handle this traffic
+      - name: my-gateway
+  
+    hostnames:
+      - "wear.my-online-store.com"
+
+    rules:
+      - matches:
+         - path:
+              type: PathPrefix
+                value: /wear*
+        backendRefs:
+          - serviceName: wear-service
+            port: 80
+  ```
+
+- Unlike Ingress annotations that are specific to each controller, gateway have specified fields generic for controllers for example in tls configuration below in gateway.
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: Gateway
+metadata:
+  name: my-gateway
+spec:
+  gatewayClassName: my-gateway-class
+  listeners:
+    - protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: my-tls-cert
+```
