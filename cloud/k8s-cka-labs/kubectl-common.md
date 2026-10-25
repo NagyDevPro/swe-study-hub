@@ -127,9 +127,41 @@ cd /etc/cni/net.d
 ```
 
 
+- to view the logs of the pods live use the below
+```bash
+kubectl logs <pod-name> -f
+```
+
+- to view the previous logs use the below
+```bash
+kubectl logs <pod-name> -f --previous
+```
+
+
+
+
 
 Now, in k8s version 1.20+ we can create an Ingress resource from the imperative way like this:-
 
 Format - kubectl create ingress <ingress-name> --rule="host/path=service:port"
 
 Example - kubectl create ingress ingress-test --rule="wear.my-online-store.com/wear*=wear-service:80"
+
+
+
+
+
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+  namespace: alpha
+spec:
+    ports:
+    - port: 3306
+      targetPort: 3306
+    selector:
+      name: mysql
